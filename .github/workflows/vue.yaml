@@ -13,3 +13,5 @@ jobs:
           reponame: 'audiochecklist'
           token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
           cname: audio.bsg.duncte123.nl
+          gitemail: '41898282+github-actions[bot]@users.noreply.github.com'
+          gitname: 'github-actions[bot]'
