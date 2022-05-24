@@ -7,31 +7,8 @@ export default {
           label: 'I am a checkbox',
           checked: false,
         },
-        {
-          label: 'I am a checkbox',
-          checked: false,
-        },
-        {
-          label: 'I am a checkbox',
-          checked: false,
-        },
-        {
-          label: 'I am a checkbox',
-          checked: false,
-        },
       ],
     };
-  },
-  mounted() {
-    for (let i = 0; i < 50; i++) {
-      // @ts-ignore
-      this.checks.push(
-          {
-            label: 'I am a checkbox' + i,
-            checked: false,
-          }
-      );
-    }
   },
   methods: {
     uncheckAll () {
@@ -57,7 +34,7 @@ export default {
       <li :class="{
           'checked': check.checked,
         }"  v-for="(check, i) in checks" :key="i" @click.prevent="check.checked = !check.checked">
-        <input type="checkbox" :id="`checkbox${i}`" v-model="check.checked">
+        <input type="checkbox" :id="`checkbox${i}`" :checked="check.checked">
         <label :for="`checkbox${i}`">{{ check.label }}</label>
       </li>
     </ul>
@@ -65,6 +42,12 @@ export default {
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+* {
+  font-family: 'Roboto', sans-serif;
+}
+
 body {
   background-color: #2F3A4F;
   color: white;
@@ -174,6 +157,7 @@ ul {
     margin-bottom: 4px;
     cursor: pointer;
     transition: background-color ease-in-out 250ms;
+    font-size: 1.3em;
 
     &.checked {
       //color: #ffffff;
