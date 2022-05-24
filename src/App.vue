@@ -1,25 +1,35 @@
 <script lang="ts">
-export default {
-  data () {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
+  data (): { checks: { label: string; checked: boolean; }[] } { // TODO: ugly
     return {
-      checks: [
-        {
-          label: 'I am a checkbox',
-          checked: false,
-        },
-      ],
+      checks: [],
     };
   },
+  mounted() {
+    const items = [
+        'Mute all sources',
+        'Disable compressor',
+        'Setup gain',
+        'Spill water?',
+    ];
+
+    for (const item of items) {
+      this.checks.push({
+        label: item,
+        checked: false,
+      });
+    }
+  },
   methods: {
-    uncheckAll () {
-      // ffs vue
-      // @ts-ignore
+    uncheckAll (): void {
       for (const check of this.checks) {
         check.checked = false;
       }
     },
   },
-};
+});
 </script>
 
 <template>
