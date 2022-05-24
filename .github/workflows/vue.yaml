@@ -5,13 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Vue
     steps:
-      - uses: actions/checkout@v2
-      - id: Build-Vue
-        uses: xRealNeon/VuePagesAction@1.0.1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          username: 'BSGmarathon'
-          reponame: 'audiochecklist'
-          token: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
+          node-version: 14
+      - run: npm run build
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          allow_empty_commit: true
           cname: audio.bsg.duncte123.nl
-          gitemail: '41898282+github-actions[bot]@users.noreply.github.com'
-          gitname: 'github-actions[bot]'
