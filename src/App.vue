@@ -24,6 +24,7 @@ export default {
   },
   mounted() {
     for (let i = 0; i < 50; i++) {
+      // @ts-ignore
       this.checks.push(
           {
             label: 'I am a checkbox' + i,
@@ -34,6 +35,8 @@ export default {
   },
   methods: {
     uncheckAll () {
+      // ffs vue
+      // @ts-ignore
       for (const check of this.checks) {
         check.checked = false;
       }
