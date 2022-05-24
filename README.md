@@ -1,3 +1,3 @@
-# Scan meq
+# BSG audio checklist
 
 ![](./qr_code.svg)
