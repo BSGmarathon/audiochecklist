@@ -1,8 +1,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import type { ApplicationData, CheckBox } from '@/applicationTypes';
 
 export default defineComponent({
-  data (): { checks: { label: string; checked: boolean; }[] } { // TODO: ugly
+  data (): ApplicationData {
     return {
       checks: [],
     };
@@ -29,6 +30,18 @@ export default defineComponent({
         check.checked = false;
       }
     },
+    checkItem(event: Event, check: CheckBox) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      event.cancelBubble = true;
+
+      // wait for the browser to do its animations
+      // fixes the weird checkbox bug
+      requestAnimationFrame(() => {
+        check.checked = !check.checked;
+      });
+    }
   },
 });
 </script>
@@ -44,8 +57,8 @@ export default defineComponent({
     <ul>
       <li :class="{
           'checked': check.checked,
-        }"  v-for="(check, i) in checks" :key="i" @click.prevent="check.checked = !check.checked">
-        <input type="checkbox" :id="`checkbox${i}`" :checked="check.checked">
+        }"  v-for="(check, i) in checks" :key="i" @click.prevent="checkItem($event, check)">
+        <input type="checkbox" :id="`checkbox${i}`" :checked="check.checked" readonly>
         <label :for="`checkbox${i}`">{{ check.label }}</label>
       </li>
     </ul>
