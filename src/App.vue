@@ -9,10 +9,11 @@ export default defineComponent({
   },
   mounted() {
     const items = [
-        'Mute all sources',
+        'Runners + game faders to 0',
         'Disable compressor',
         'Setup gain',
-        'Spill water?',
+        'Stay hydrated',
+        'Final check',
     ];
 
     for (const item of items) {
