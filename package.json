@@ -9,6 +9,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "pusher-js": "^7.1.1-beta",
     "vue": "^3.2.33"
   },
   "devDependencies": {

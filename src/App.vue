@@ -1,6 +1,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import type { ApplicationData, CheckBox } from '@/applicationTypes';
+import { channel, UNCHECK_EVENT, sendAudioReady } from './pusher';
 
 export default defineComponent({
   data (): ApplicationData {
@@ -8,13 +9,13 @@ export default defineComponent({
       checks: [],
     };
   },
-  mounted() {
+  created(): void {
     const items = [
-        'Runners + game faders to 0',
-        'Disable compressor',
-        'Setup gain',
-        'Stay hydrated',
-        'Final check',
+      'Runners + game faders to 0',
+      'Disable compressor',
+      'Setup gain',
+      'Stay hydrated',
+      'Final check',
     ];
 
     for (const item of items) {
@@ -24,11 +25,31 @@ export default defineComponent({
       });
     }
   },
+  mounted() {
+    channel.bind(UNCHECK_EVENT, () => {
+      this.uncheckAll();
+    });
+  },
+  beforeUnmount() {
+    channel.unbind(UNCHECK_EVENT);
+  },
+  watch: {
+    checks: {
+      deep: true,
+      handler(value: CheckBox[]) {
+        if (value.every((cb) => cb.checked)) {
+          sendAudioReady(true);
+        }
+      },
+    },
+  },
   methods: {
     uncheckAll (): void {
       for (const check of this.checks) {
         check.checked = false;
       }
+
+      sendAudioReady(false);
     },
     checkItem(event: Event, check: CheckBox) {
       event.preventDefault();
@@ -39,6 +60,11 @@ export default defineComponent({
       // wait for the browser to do its animations
       // fixes the weird checkbox bug
       requestAnimationFrame(() => {
+        // if all the checks used to be checked, send not ready event
+        if (this.checks.every((cb) => cb.checked)) {
+          sendAudioReady(false);
+        }
+
         check.checked = !check.checked;
       });
     }
