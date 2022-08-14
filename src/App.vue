@@ -12,10 +12,16 @@ export default defineComponent({
   created(): void {
     const items = [
       'Runners + game faders to 0',
-      'Disable compressor',
-      'Setup gain',
-      'Stay hydrated',
-      'Final check',
+      'Replace protection on all used microphones',
+      'Set volume for runner headsets',
+      'Ask runners + commentators if they want to hear themselves',
+      'Ask runners + commentators if they can hear each other',
+      'Host fader down',
+      'Make host talk and ask runner + comms if they can hear host',
+      'Ask host to count down and stuff',
+      'Host fader to 0 (unity)',
+      // 'After countdown runner faders up',
+      // 'Slowly fade up game volume',
     ];
 
     for (const item of items) {
