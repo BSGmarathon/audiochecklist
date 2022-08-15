@@ -2,34 +2,52 @@
 import { defineComponent } from 'vue'
 import type { ApplicationData, CheckBox } from '@/applicationTypes';
 import { channel, UNCHECK_EVENT, sendAudioReady } from './pusher';
+import {setAllGameItems, setAllMicItems, setAllMixbusItems} from '@/itemList';
 
 export default defineComponent({
   data (): ApplicationData {
     return {
-      checks: [],
+      items: [],
     };
   },
   created(): void {
-    const items = [
-      'Runners + game faders to 0',
-      'Replace protection on all used microphones',
-      'Set volume for runner headsets',
-      'Ask runners + commentators if they want to hear themselves',
-      'Ask runners + commentators if they can hear each other',
-      'Host fader down',
-      'Make host talk and ask runner + comms if they can hear host',
-      'Ask host to count down and stuff',
-      'Host fader to 0 (unity)',
-      // 'After countdown runner faders up',
-      // 'Slowly fade up game volume',
-    ];
+    this.items.push({
+      header: 'Note:',
+      checks: [
+        {
+          label: 'If you are having trouble with anything please talk to your senior tech.',
+          checked: false,
+          justText: true,
+        },
+      ],
+    });
 
-    for (const item of items) {
-      this.checks.push({
-        label: item,
-        checked: false,
-      });
-    }
+    const mic: CheckBox[] = [];
+
+    setAllMicItems(mic);
+
+    this.items.push({
+      header: 'Microphones',
+      checks: mic,
+    });
+
+    const game: CheckBox[] = [];
+
+    setAllGameItems(game);
+
+    this.items.push({
+      header: 'Game audio',
+      checks: game,
+    });
+
+    const mixBus: CheckBox[] = [];
+
+    setAllMixbusItems(mixBus);
+
+    this.items.push({
+      header: 'Mixbus',
+      checks: mixBus,
+    });
   },
   mounted() {
     channel.bind(UNCHECK_EVENT, () => {
@@ -40,24 +58,34 @@ export default defineComponent({
     channel.unbind(UNCHECK_EVENT);
   },
   watch: {
-    checks: {
-      deep: true,
-      handler(value: CheckBox[]) {
-        if (value.every((cb) => cb.checked)) {
-          sendAudioReady(true);
-        }
-      },
+    allChecked () {
+      if (this.allChecked) {
+        sendAudioReady(true);
+      }
+    },
+  },
+  computed: {
+    allChecked (): boolean {
+      return this.items.every(
+          (item) => item.checks.every((cb) => cb.justText || cb.checked),
+      );
     },
   },
   methods: {
     uncheckAll (): void {
-      for (const check of this.checks) {
-        check.checked = false;
+      for (const item of this.items) {
+        for (const check of item.checks) {
+          check.checked = false;
+        }
       }
 
       sendAudioReady(false);
     },
     checkItem(event: Event, check: CheckBox) {
+      if (check.justText) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 
@@ -67,7 +95,7 @@ export default defineComponent({
       // fixes the weird checkbox bug
       requestAnimationFrame(() => {
         // if all the checks used to be checked, send not ready event
-        if (this.checks.every((cb) => cb.checked)) {
+        if (this.allChecked) {
           sendAudioReady(false);
         }
 
@@ -86,14 +114,20 @@ export default defineComponent({
   </header>
 
   <main>
-    <ul>
-      <li :class="{
+    <div v-for="(item, i) in items" :key="i">
+      <h1>{{ item.header }}</h1>
+      <ul>
+        <li :class="{
           'checked': check.checked,
-        }"  v-for="(check, i) in checks" :key="i" @click.prevent="checkItem($event, check)">
-        <input type="checkbox" :id="`checkbox${i}`" :checked="check.checked" readonly>
-        <label :for="`checkbox${i}`">{{ check.label }}</label>
-      </li>
-    </ul>
+        }"  v-for="(check, i) in item.checks" :key="i" @click.prevent="checkItem($event, check)">
+          <label v-if="check.justText" v-html="check.label"></label>
+          <template v-else>
+            <input type="checkbox" :id="`checkbox${i}`" :checked="check.checked" readonly>
+            <label :for="`checkbox${i}`">{{ check.label }}</label>
+          </template>
+        </li>
+      </ul>
+    </div>
   </main>
 </template>
 
@@ -213,7 +247,7 @@ ul {
     margin-bottom: 4px;
     cursor: pointer;
     transition: background-color ease-in-out 250ms;
-    font-size: 1.3em;
+    font-size: 1.2em;
 
     &.checked {
       //color: #ffffff;
